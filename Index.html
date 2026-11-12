@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #0d100f;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 75px;
+    }
+
+    /* Top Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background-color: #0d100f;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .back-btn {
+      font-size: 22px;
+      color: #ffffff;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #5eead4;
+      color: #0d100f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .settings-btn {
+      font-size: 22px;
+      color: #cbd5e1;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+      padding: 10px 20px 22px;
+    }
+
+    .welcome-section h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .welcome-section p {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    /* 2x2 Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      padding: 0 20px;
+    }
+
+    .stat-card {
+      background-color: #171a19;
+      border-radius: 16px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 145px;
+    }
+
+    .card-orders {
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    .card-payments {
+      border: 1px solid rgba(45, 212, 191, 0.35);
+    }
+
+    .card-dues {
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .card-revenue {
+      border: 1px solid rgba(52, 211, 153, 0.35);
+    }
+
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card-label {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .card-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #161918;
+      border-top: 1px solid #262a29;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: #5eead4;
+    }
+
+    .nav-icon {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <div class="top-bar">
+    <div class="header-left">
+      <button class="back-btn" onclick="history.back()">←</button>
+      <div class="avatar-circle">👤</div>
+      <span class="header-title">Admin Panel</span>
+    </div>
+    <button class="settings-btn">⚙️</button>
+  </div>
+
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <h1>Welcome Back, Boss!</h1>
+    <p>Here is your business overview today.</p>
+  </div>
+
+  <!-- 4 Cards Grid -->
+  <div class="stats-grid">
+    <div class="stat-card card-orders">
+      <div class="card-icon" style="color: #3b82f6;">🛒</div>
+      <div>
+        <div class="card-label">Product Orders</div>
+        <div class="card-value" id="productOrders">--</div>
+      </div>
+    </div>
+
+    <div class="stat-card card-payments">
+      <div class="card-icon" style="color: #2dd4bf;">🏋️</div>
+      <div>
+        <div class="card-label">Gym Payments</div>
+        <div class="card-value" id="gymPayments">--</div>
+      </div>
+    </div>
+
+    <div class="stat-card card-dues">
+      <div class="card-icon" style="color: #f59e0b;">⚠️</div>
+      <div>
+        <div class="card-label">Pending Dues</div>
+        <div class="card-value" id="pendingDues">--</div>
+      </div>
+    </div>
+
+    <div class="stat-card card-revenue">
+      <div class="card-icon" style="color: #34d399;">💳</div>
+      <div>
+        <div class="card-label">Total Revenue</div>
+        <div class="card-value" id="totalRevenue">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="#" class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon">👥</span>
+      <span>Members</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon">🛍️</span>
+      <span>Product</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
+  </div>
+
+  <script>
+    // Yahan apna Single Dashboard API URL daal dena
+    const DASHBOARD_API_URL = '';
+
+    async function loadDashboardData() {
+      if (!DASHBOARD_API_URL) return;
+
+      try {
+        const response = await fetch(DASHBOARD_API_URL, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+
+        // API se aane wale fields ko cards mein set karna
+        if (response.ok && data) {
+          document.getElementById('productOrders').textContent = data.productOrders ?? '--';
+          document.getElementById('gymPayments').textContent = data.gymPayments ? '₹' + data.gymPayments : '--';
+          document.getElementById('pendingDues').textContent = data.pendingDues ? data.pendingDues + ' Users' : '--';
+          document.getElementById('totalRevenue').textContent = data.totalRevenue ? '₹' + data.totalRevenue : '--';
+        }
+      } catch (error) {
+        console.error('Dashboard API Error:', error);
+      }
+    }
+
+    // Page load hote hi API se data fetch karega
+    loadDashboardData();
+  </script>
+
+</body>
+</html>
