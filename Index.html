@@ -181,13 +181,13 @@
       <div class="avatar-circle">👤</div>
       <span class="header-title">Admin Panel</span>
     </div>
-    <button class="settings-btn">⚙️</button>
+    <button class="settings-btn" onclick="loadDashboardData()" title="Refresh Data">🔄</button>
   </div>
 
   <!-- Welcome Section -->
   <div class="welcome-section">
     <h1>Welcome Back, Boss!</h1>
-    <p>Here is your business overview today.</p>
+    <p id="statusMsg">Here is your business overview today.</p>
   </div>
 
   <!-- 4 Cards Grid -->
@@ -196,7 +196,7 @@
       <div class="card-icon" style="color: #3b82f6;">🛒</div>
       <div>
         <div class="card-label">Product Orders</div>
-        <div class="card-value" id="productOrders">--</div>
+        <div class="card-value" id="productOrders">...</div>
       </div>
     </div>
 
@@ -204,7 +204,7 @@
       <div class="card-icon" style="color: #2dd4bf;">🏋️</div>
       <div>
         <div class="card-label">Gym Payments</div>
-        <div class="card-value" id="gymPayments">--</div>
+        <div class="card-value" id="gymPayments">...</div>
       </div>
     </div>
 
@@ -212,7 +212,7 @@
       <div class="card-icon" style="color: #f59e0b;">⚠️</div>
       <div>
         <div class="card-label">Pending Dues</div>
-        <div class="card-value" id="pendingDues">--</div>
+        <div class="card-value" id="pendingDues">...</div>
       </div>
     </div>
 
@@ -220,7 +220,7 @@
       <div class="card-icon" style="color: #34d399;">💳</div>
       <div>
         <div class="card-label">Total Revenue</div>
-        <div class="card-value" id="totalRevenue">--</div>
+        <div class="card-value" id="totalRevenue">...</div>
       </div>
     </div>
   </div>
@@ -246,34 +246,65 @@
   </div>
 
   <script>
-    // Yahan apna Single Dashboard API URL daal dena
-    const DASHBOARD_API_URL = '';
+    const DASHBOARD_API_URL = 'https://gym-backend-rfvv.onrender.com/api/admin/dashboard/dashboard-stats';
 
     async function loadDashboardData() {
-      if (!DASHBOARD_API_URL) return;
+      const statusMsg = document.getElementById('statusMsg');
+      
+      // Loading state dikhana jab tak Render server wake-up ho
+      document.getElementById('productOrders').textContent = '...';
+      document.getElementById('gymPayments').textContent = '...';
+      document.getElementById('pendingDues').textContent = '...';
+      document.getElementById('totalRevenue').textContent = '...';
 
       try {
+        // Agar localStorage mein admin token save hai toh automatically header mein chala jayega
+        const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(DASHBOARD_API_URL, {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
+          headers: headers
         });
 
-        const data = await response.json();
+        const result = await response.json();
+        console.log('API Response:', result); // Console mein exact structure check karne ke liye
 
-        // API se aane wale fields ko cards mein set karna
-        if (response.ok && data) {
-          document.getElementById('productOrders').textContent = data.productOrders ?? '--';
-          document.getElementById('gymPayments').textContent = data.gymPayments ? '₹' + data.gymPayments : '--';
-          document.getElementById('pendingDues').textContent = data.pendingDues ? data.pendingDues + ' Users' : '--';
-          document.getElementById('totalRevenue').textContent = data.totalRevenue ? '₹' + data.totalRevenue : '--';
+        if (response.ok && result) {
+          // Agar response { data: { ... } } ya { stats: { ... } } mein wrapped ho toh use handle karega
+          const stats = result.data || result.stats || result;
+
+          const orders = stats.productOrders ?? stats.totalOrders ?? 0;
+          const payments = stats.gymPayments ?? stats.totalGymPayments ?? 0;
+          const dues = stats.pendingDues ?? stats.dueUsers ?? 0;
+          const revenue = stats.totalRevenue ?? stats.revenue ?? 0;
+
+          document.getElementById('productOrders').textContent = orders;
+          document.getElementById('gymPayments').textContent = '₹' + Number(payments).toLocaleString('en-IN');
+          document.getElementById('pendingDues').textContent = dues + ' Users';
+          document.getElementById('totalRevenue').textContent = '₹' + Number(revenue).toLocaleString('en-IN');
+          
+          statusMsg.textContent = 'Here is your business overview today.';
+        } else {
+          throw new Error(result.message || 'Failed to fetch data');
         }
       } catch (error) {
         console.error('Dashboard API Error:', error);
+        document.getElementById('productOrders').textContent = '--';
+        document.getElementById('gymPayments').textContent = '--';
+        document.getElementById('pendingDues').textContent = '--';
+        document.getElementById('totalRevenue').textContent = '--';
+        statusMsg.textContent = 'Server waking up or connection issue. Tap 🔄 to retry.';
       }
     }
 
     // Page load hote hi API se data fetch karega
-    loadDashboardData();
+    window.addEventListener('DOMContentLoaded', loadDashboardData);
   </script>
 
 </body>
